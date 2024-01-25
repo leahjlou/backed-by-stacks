@@ -1,3 +1,7 @@
+export async function GET() {
+  return Response.json({});
+}
+
 // Get list of campaigns and their funding info
 // GET /api/campaigns
 

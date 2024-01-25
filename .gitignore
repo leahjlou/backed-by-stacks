@@ -3,6 +3,7 @@
 **/settings/Testnet.toml
 .cache/**
 history.txt
+.next
 
 # Ignore Node and NPM files. Added by the clarinet-sdk migration.
 logs
