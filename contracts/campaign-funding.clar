@@ -52,7 +52,6 @@
 })
 
 ;; Campaign contributions by campaign ID
-;; Used to refund contributors if campaign fails
 (define-map campaign-contributions
     {
         campaign-id: uint,
