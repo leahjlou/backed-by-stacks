@@ -9,6 +9,7 @@ Contract code can be found within the `contracts` directory.
 ### Functions
 
 Public
+
 - `add-campaign`: create a new campaign.
 - `update-campaign-data`: update data for a given campaign.
 - `contribute-to-campaign`: make a contribution to a given campaign. the funds are collected from the caller's wallet and stored in the contract, awaiting the end of the campaign.
@@ -16,6 +17,7 @@ Public
 - `refund-contribution`: refunds a contribution back to a contributor. can be called exactly once per contributor, after a campaign has reached its end, and if the campaign did not meet its funding goal.
 
 Read-only
+
 - `get-campaign`: get details of a given campaign
 - `get-campaign-funding-totals`: get the total amount raised and total number of contributions to a given campaign
 - `is-campaign-expired`: check if a campaign has reached its end
@@ -31,7 +33,15 @@ npm test:contracts
 
 The application is a Next.JS app.
 
-### Run app locally
+### Local development
+
+Install dependencies:
+
+```
+npm i
+```
+
+Run the app:
 
 ```
 npm dev
