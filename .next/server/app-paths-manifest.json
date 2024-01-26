@@ -1,7 +1,0 @@
-{
-  "/_not-found": "app/_not-found.js",
-  "/api/campaigns/[campaignId]/route": "app/api/campaigns/[campaignId]/route.js",
-  "/api/campaigns/route": "app/api/campaigns/route.js",
-  "/api/contributions/route": "app/api/contributions/route.js",
-  "/page": "app/page.js"
-}
