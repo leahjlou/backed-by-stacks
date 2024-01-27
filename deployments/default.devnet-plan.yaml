@@ -11,16 +11,8 @@ plan:
         - contract-publish:
             contract-name: campaign-funding
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 28390
+            cost: 86340
             path: contracts/campaign-funding.clar
             anchor-block-only: true
             clarity-version: 2
-    - id: 1
-      transactions:
-        - contract-call:
-            contract-id: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.campaign-funding
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            method: get-status
-            parameters: []
-            cost: 5960
       epoch: "2.4"
