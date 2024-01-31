@@ -20,21 +20,27 @@ npm test:contracts
 
 ### Run the application locally
 
-1. Start a Stacks Devnet
+1. Run a local Stacks DevNet
 
 ```
 clarinet devnet start
 ```
 
-This will start a Stacks Devnet at `localhost:3999`.
+This will start a Stacks Devnet at `localhost:3999`. The terminal window will turn into an interface where you can browse mined blocks and the transactions within them. The DevNet will automatically deploy the `campaign-funding` smart contract, and make several local wallets available for testing (see `settings/Devnet.toml` for details).
 
-2. Run the app
+If you make changes to the Smart Contract during development, you will need to stop and restart the DevNet.
+
+Once the DevNet is running, note that you can use the [Stacks Explorer connected to your DevNet](https://explorer.hiro.so/sandbox/contract-call?chain=testnet&api=http://localhost:3999) to easily call functions and browse blocks.
+
+2. Run the web application
+
+In a separate terminal window, run:
 
 ```
-npm dev
+npm run dev
 ```
 
-This will start the application at `localhost:3000`.
+This will start the NextJS application at `localhost:3000`.
 
 Visit `localhost:3000` in your browser.
 

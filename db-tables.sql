@@ -2,6 +2,7 @@
 
 CREATE TABLE Campaigns (
   ID INTEGER PRIMARY KEY,
+  Title varchar(255),
   Description varchar(255),
   URL varchar(255),
   Image varchar(255),

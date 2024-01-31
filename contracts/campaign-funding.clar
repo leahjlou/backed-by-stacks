@@ -41,7 +41,7 @@
     title: (string-utf8 200),
     stx-goal: uint, ;; funding goal (in stx)
     end-block-height: uint, ;; when this block height is reached, the campaign will end
-    data-hash: (buff 32), ;; hash of off-chain data (data is stored by the application and on-chain hash is compared to validate)
+    data-hash: (string-utf8 40), ;; hash of off-chain data (data is stored by the application and on-chain hash is compared to validate)
 })
 
 ;; Campaign funding totals (by campaign ID)
@@ -71,7 +71,7 @@
     (title (string-utf8 20))
     (stx-goal uint)
     (num-blocks-until-end uint)
-    (data-hash (buff 32))
+    (data-hash (string-utf8 40))
 )
     (let ((campaign-id (+ (var-get campaign-id-nonce) u1)))
 		(if (and
@@ -99,7 +99,7 @@
 (define-public (update-campaign-data
     (campaign-id uint)
     (title (string-utf8 200))
-    (data-hash (buff 32))
+    (data-hash (string-utf8 40))
 )
     (let
         (

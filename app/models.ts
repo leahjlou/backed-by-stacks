@@ -3,6 +3,7 @@ import crypto from "crypto";
 
 export const CampaignSchema = z.object({
   id: z.number().int(),
+  title: z.string(),
   description: z.string().optional(),
   url: z.string().optional(),
   image: z.string().optional(),
@@ -14,7 +15,8 @@ export const CampaignSchema = z.object({
 });
 
 export interface Campaign {
-  id: number;
+  id?: number;
+  title: string;
   description?: string;
   url?: string;
   image?: string;
@@ -23,12 +25,14 @@ export interface Campaign {
   totalRaised: number;
   dateCreated: number; // ms timestamp
   dateUpdated: number; // ms timestamp
+  isDataValidatedOnChain?: boolean; // Flag to verify data against on-chain hash
 }
 
 // Convert db row to client-ready campaign data
 export function campaignDbToClient(campaignData: any) {
   return {
     id: campaignData.id,
+    title: campaignData.title,
     description: campaignData.description,
     url: campaignData.url,
     image: campaignData.image,
@@ -40,15 +44,22 @@ export function campaignDbToClient(campaignData: any) {
   };
 }
 
-// This hash is stored on the blockchain and checked to ensure data in centralized data store has not been altered.
-export function getCampaignDataHash(campaign: Campaign) {
-  const data = {
-    ...campaign,
-    // The database uses a seconds timestamp for dates, so ensure milliseconds precision is removed for consistency.
-    dateCreated: Math.round(campaign.dateCreated / 1000) * 1000,
-    dateUpdated: Math.round(campaign.dateUpdated / 1000) * 1000,
+// This hash is stored on the blockchain and checked to ensure user-facing data in centralized data store has not been altered.
+export function getCampaignDataHash(
+  title: string,
+  description: string,
+  url: string,
+  image: string
+) {
+  const dataToHash = {
+    title,
+    description,
+    url,
+    image,
   };
-  return crypto.createHash(JSON.stringify(data));
+  const sha1 = crypto.createHash("sha1");
+  sha1.update(JSON.stringify(dataToHash));
+  return sha1.digest("hex");
 }
 
 export const ContributionSchema = z.object({
