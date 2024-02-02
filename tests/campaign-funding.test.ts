@@ -32,7 +32,7 @@ const hash = "70573301787ea4db801ca44a7b9ecd28443jjk11";
 function buildCampaignData(blockHeight: number, blockDuration: number = 50) {
   return {
     title: Cl.stringUtf8(title),
-    "stx-goal": Cl.uint(goal),
+    "ustx-goal": Cl.uint(goal),
     "end-block-height": Cl.uint(blockHeight + blockDuration),
     "data-hash": Cl.stringUtf8(hash),
     owner: Cl.principal(address1),

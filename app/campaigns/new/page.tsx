@@ -12,6 +12,7 @@ import {
   InputGroup,
   InputLeftAddon,
   Link,
+  useToast,
 } from "@chakra-ui/react";
 import PageContainer from "../../../ui/components/PageContainer";
 import AppHeader from "../../../ui/components/AppHeader";
@@ -20,11 +21,28 @@ import WalletContext from "../../../ui/context/WalletContext";
 import ConnectWalletButton from "../../../ui/components/ConnectWalletButton";
 import ImageUploader from "../../../ui/components/ImageUploader";
 import StacksIcon from "../../../ui/icons/StacksIcon";
-import { Campaign, getCampaignDataHash } from "../../models";
+import { getCampaignDataHash } from "../../models";
+import { stxToUstx } from "../../../utils/token-utils";
+import {
+  CONTRACT_DEPLOYER_ADDRESS,
+  CONTRACT_NAME,
+  STACKS_NETWORK,
+} from "../../../utils/stacks-api";
+import { Cl } from "@stacks/transactions";
+import {
+  ContractCallOptions,
+  FinishedTxData,
+  openContractCall,
+} from "@stacks/connect";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const toast = useToast();
+  const router = useRouter();
   const { isWalletConnected } = useContext(WalletContext);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [campaignData, setCampaignData] = useState({
     title: "",
     description: "",
@@ -41,10 +59,10 @@ export default function Page() {
     }));
   };
 
-  const handleCreateFundraiser = () => {
-    // TODO
-    // Create the campaign on-chain first, then save it in the db
-    // But need to calculate the hash first
+  const handleCreateFundraiser = async () => {
+    setIsLoading(true);
+
+    // Calculate data hash to save on-chain
     const campaignDataHash = getCampaignDataHash(
       campaignData.title,
       campaignData.description,
@@ -53,10 +71,72 @@ export default function Page() {
     );
 
     // Construct transaction to call add-campaign
+    const addCampaignContractCallOptions: ContractCallOptions = {
+      network: STACKS_NETWORK,
+      contractName: CONTRACT_NAME,
+      contractAddress: CONTRACT_DEPLOYER_ADDRESS,
+      functionName: "add-campaign",
+      functionArgs: [
+        Cl.stringUtf8(campaignData.title),
+        Cl.uint(stxToUstx(campaignData.fundingGoal)),
+        Cl.uint(campaignData.blockDuration),
+        Cl.stringUtf8(campaignDataHash),
+      ],
+      onCancel: () => {
+        setIsLoading(false);
+      },
+      onFinish: async (data: FinishedTxData) => {
+        const chainTxId = data.txId; // Transaction ID of the contract call
+        const newCampaign = {
+          chainTxId,
+          chainIsPending: true,
+          title: campaignData.title,
+          description: campaignData.description,
+          url: campaignData.url,
+          image: campaignData.image,
+          fundingGoal: stxToUstx(campaignData.fundingGoal),
+          totalRaised: 0,
+          dateCreated: Date.now(),
+          dateUpdated: Date.now(),
+        };
 
-    // Fetch the new campaign from on-chain
+        // Initialize the campaign in the database: POST /api/campaigns
+        try {
+          const { data } = await axios.post("/api/campaigns", newCampaign);
+          toast({
+            status: "info",
+            title: "You sent a request to open a new fundraiser",
+            description:
+              "Your new fundraiser is pending creation, and will be available once confirmed.",
+          });
+          router.push(`/campaigns/${data?.id}`);
+        } catch (error) {
+          console.error({ error });
+          toast({
+            status: "error",
+            title: "Error creating fundraiser",
+            description: "There was a problem creating your fundraiser.",
+          });
+        }
 
-    // Store the campaign in application db
+        setIsLoading(false);
+
+        // When the chain tx is confirmed, the campaign will be updated with the on-chain
+        // confirmed data via a chainhook (see /api/webhooks/new-block)
+      },
+    };
+
+    try {
+      await openContractCall(addCampaignContractCallOptions);
+    } catch (error) {
+      console.error(error);
+      toast({
+        status: "error",
+        title: "Error creating fundraiser",
+        description:
+          "There was a problem creating your fundraiser. Please try again later.",
+      });
+    }
   };
 
   const isFormValid =
@@ -216,7 +296,8 @@ export default function Page() {
               <Flex direction="column" gap="2">
                 <Box>
                   <Button
-                    isDisabled={!isFormValid}
+                    isDisabled={!isFormValid || isLoading}
+                    isLoading={isLoading}
                     onClick={handleCreateFundraiser}
                     variant="solid"
                     colorScheme="purple"

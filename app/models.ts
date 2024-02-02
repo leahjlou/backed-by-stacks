@@ -2,12 +2,14 @@ import { z } from "zod";
 import crypto from "crypto";
 
 export const CampaignSchema = z.object({
-  id: z.number().int(),
   title: z.string(),
-  description: z.string().optional(),
+  chainTxId: z.string(),
+  chainIsPending: z.boolean(),
+  chainConfirmedId: z.number().optional(),
+  description: z.string(),
   url: z.string().optional(),
   image: z.string().optional(),
-  blockHeightExpiration: z.number().int(),
+  blockHeightExpiration: z.number().int().optional(),
   fundingGoal: z.number().int(),
   totalRaised: z.number().int(),
   dateCreated: z.number(),
@@ -16,11 +18,14 @@ export const CampaignSchema = z.object({
 
 export interface Campaign {
   id?: number;
+  chainTxId: string; // Transaction ID of the contract call which added this campaign
+  chainIsPending: boolean; // If the campaign creation is still pending on chain
+  chainConfirmedId?: number; // Campaign ID on chain
   title: string;
-  description?: string;
+  description: string;
   url?: string;
   image?: string;
-  blockHeightExpiration: number;
+  blockHeightExpiration?: number;
   fundingGoal: number;
   totalRaised: number;
   dateCreated: number; // ms timestamp
@@ -28,10 +33,25 @@ export interface Campaign {
   isDataValidatedOnChain?: boolean; // Flag to verify data against on-chain hash
 }
 
+export interface CampaignFundingInfo {
+  amount: number;
+  numContributions: number;
+  isCollected: boolean;
+}
+
+export interface CampaignDetailsResponse {
+  campaign: Campaign | null;
+  fundingInfo: CampaignFundingInfo | null;
+  isDataValidatedOnChain: boolean | null;
+}
+
 // Convert db row to client-ready campaign data
 export function campaignDbToClient(campaignData: any) {
   return {
     id: campaignData.id,
+    chainTxId: campaignData.chaintxid,
+    chainIsPending: campaignData.chainispending,
+    chainConfirmedId: campaignData.chainconfirmedid,
     title: campaignData.title,
     description: campaignData.description,
     url: campaignData.url,
@@ -48,8 +68,8 @@ export function campaignDbToClient(campaignData: any) {
 export function getCampaignDataHash(
   title: string,
   description: string,
-  url: string,
-  image: string
+  url?: string,
+  image?: string
 ) {
   const dataToHash = {
     title,

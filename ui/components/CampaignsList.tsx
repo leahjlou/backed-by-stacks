@@ -4,6 +4,7 @@ import axios from "axios";
 import { Campaign } from "../../app/models";
 import Link from "next/link";
 import WalletContext from "../context/WalletContext";
+import PlaceholderImage from "../components/PlaceholderImage";
 
 const CampaignsList = () => {
   const [campaigns, setCampaigns] = useState<Campaign[] | null>(null);
@@ -21,23 +22,30 @@ const CampaignsList = () => {
     <>
       {campaigns && campaigns.length > 0 ? (
         <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-          {campaigns.map((campaign) => (
-            <GridItem
-              key={campaign.id}
-              as={Link}
-              href={`/campaigns/${campaign.id}`}
-              w="full"
-              bg="gray.100"
-              p="4"
-              borderRadius="md"
-              display="flex"
-              flexDir="column"
-              gap="4"
-            >
-              <Heading size="sm">{campaign.title}</Heading>
-              <Box>{campaign.description}</Box>
-            </GridItem>
-          ))}
+          {campaigns
+            .sort((a, b) => (a.dateCreated < b.dateCreated ? 1 : -1)) // Most recent 1st
+            .map((campaign) => (
+              <GridItem
+                key={campaign.id}
+                as={Link}
+                href={`/campaigns/${campaign.id}`}
+                w="full"
+                bg="gray.100"
+                p="4"
+                borderRadius="md"
+                display="flex"
+                flexDir="column"
+                gap="4"
+              >
+                {campaign.image ? (
+                  <img src={campaign.image} style={{ maxHeight: "500px" }} />
+                ) : (
+                  <PlaceholderImage title={campaign.title} />
+                )}
+                <Heading size="sm">{campaign.title}</Heading>
+                <Box>{campaign.description}</Box>
+              </GridItem>
+            ))}
         </Grid>
       ) : (
         <Box

@@ -22,6 +22,10 @@ export const ustxToStx = (
   return value;
 };
 
+export const stxToUstx = (amountInStacks: string | number): number => {
+  return Number(Number(amountInStacks) * 10 ** 6);
+};
+
 export const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",

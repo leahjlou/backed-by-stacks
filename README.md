@@ -30,7 +30,7 @@ This will start a Stacks Devnet at `localhost:3999`. The terminal window will tu
 
 If you make changes to the Smart Contract during development, you will need to stop and restart the DevNet.
 
-Once the DevNet is running, note that you can use the [Stacks Explorer connected to your DevNet](https://explorer.hiro.so/sandbox/contract-call?chain=testnet&api=http://localhost:3999) to easily call functions and browse blocks.
+Once the DevNet is running, note that you can use the [Stacks Explorer connected to your DevNet](https://explorer.hiro.so/sandbox/contract-call?chain=testnet&api=http://localhost:3999) to easily call functions, browse blocks, and request STX from the faucet to use for testing.
 
 2. Run the web application
 

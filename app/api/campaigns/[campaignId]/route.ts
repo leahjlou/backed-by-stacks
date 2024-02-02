@@ -1,6 +1,7 @@
 import { sql } from "@vercel/postgres";
 import {
   Campaign,
+  CampaignDetailsResponse,
   CampaignSchema,
   campaignDbToClient,
   getCampaignDataHash,
@@ -12,7 +13,14 @@ import {
   ContractFunctionName,
   STACKS_NETWORK,
 } from "../../../../utils/stacks-api";
-import { Cl, callReadOnlyFunction, cvToJSON } from "@stacks/transactions";
+import {
+  Cl,
+  callReadOnlyFunction,
+  cvToJSON,
+  cvToValue,
+  responseErrorCV,
+  ClarityType,
+} from "@stacks/transactions";
 
 // Handle campaign data updated
 // PUT /api/campaigns/{id}
@@ -52,45 +60,6 @@ export async function GET(
 ) {
   const campaignId = params.campaignId;
 
-  const getCampaignFn: ContractFunctionName = "get-campaign";
-  const getCampaignFundingFn: ContractFunctionName =
-    "get-campaign-funding-totals";
-
-  // Get campaign info from blockchain
-  const getCampaignResponse = await callReadOnlyFunction({
-    contractAddress: CONTRACT_DEPLOYER_ADDRESS,
-    contractName: CONTRACT_NAME,
-    functionName: getCampaignFn,
-    functionArgs: [Cl.uint(campaignId)],
-    network: STACKS_NETWORK,
-    senderAddress: APPLICATION_ADDRESS,
-  });
-  const onChainHash =
-    cvToJSON(getCampaignResponse)?.value?.value?.["data-hash"]?.value;
-  if (!onChainHash) {
-    return new Response("No campaign found on chain", {
-      status: 404,
-    });
-  }
-
-  // Get campaign funding info from blockchain
-  const getCampaignFundingResponse = await callReadOnlyFunction({
-    contractAddress: CONTRACT_DEPLOYER_ADDRESS,
-    contractName: CONTRACT_NAME,
-    functionName: getCampaignFundingFn,
-    functionArgs: [Cl.uint(campaignId)],
-    network: STACKS_NETWORK,
-    senderAddress: APPLICATION_ADDRESS,
-  });
-  const campaignFunding = cvToJSON(getCampaignFundingResponse)?.value?.value;
-  const fundingInfo = {
-    amount: parseInt(campaignFunding?.["funding-total-amount"]?.value || "0"),
-    numContributions: parseInt(
-      campaignFunding?.["total-num-contributions"]?.value || "0"
-    ),
-    isCollected: campaignFunding?.["is-collected"]?.value,
-  };
-
   // Get campaign from application database
   let campaign: Campaign;
   try {
@@ -103,12 +72,70 @@ export async function GET(
     });
   }
 
-  const hash = getCampaignDataHash(campaign);
-  console.log({ hash });
+  // Get campaign info from blockchain
+  let fundingInfo;
+  let onChainHash;
+  const campaignChainId = campaign.chainConfirmedId;
+  if (campaignChainId) {
+    const getCampaignFn: ContractFunctionName = "get-campaign";
+    const getCampaignFundingFn: ContractFunctionName =
+      "get-campaign-funding-totals";
 
-  return Response.json({
+    try {
+      const getCampaignResponse = await callReadOnlyFunction({
+        contractAddress: CONTRACT_DEPLOYER_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: getCampaignFn,
+        functionArgs: [Cl.uint(campaignChainId)],
+        network: STACKS_NETWORK,
+        senderAddress: APPLICATION_ADDRESS,
+      });
+      if (getCampaignResponse.type === ClarityType.ResponseErr) {
+        throw new Error("Campaign not found on chain");
+      }
+
+      onChainHash =
+        cvToJSON(getCampaignResponse)?.value?.value?.["data-hash"]?.value;
+
+      // Get campaign funding info from blockchain
+      const getCampaignFundingResponse = await callReadOnlyFunction({
+        contractAddress: CONTRACT_DEPLOYER_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: getCampaignFundingFn,
+        functionArgs: [Cl.uint(campaignChainId)],
+        network: STACKS_NETWORK,
+        senderAddress: APPLICATION_ADDRESS,
+      });
+      const campaignFunding = cvToJSON(getCampaignFundingResponse)?.value
+        ?.value;
+      fundingInfo = {
+        amount: parseInt(
+          campaignFunding?.["funding-total-amount"]?.value || "0"
+        ),
+        numContributions: parseInt(
+          campaignFunding?.["total-num-contributions"]?.value || "0"
+        ),
+        isCollected: campaignFunding?.["is-collected"]?.value,
+      };
+    } catch (err) {
+      console.error(err);
+      console.log(
+        "Campaign not found on chain, only returning data from application DB."
+      );
+    }
+  }
+
+  const hash = getCampaignDataHash(
+    campaign.title,
+    campaign.description,
+    campaign.url,
+    campaign.image
+  );
+
+  const response: CampaignDetailsResponse = {
     campaign,
     fundingInfo,
     isDataValidatedOnChain: onChainHash === hash,
-  });
+  };
+  return Response.json(response);
 }

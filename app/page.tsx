@@ -26,7 +26,7 @@ export default function Page() {
           <Tooltip
             label={
               !isWalletConnected
-                ? "Connect your Stacks wallet above to propose a new fundraiser."
+                ? "Connect your Stacks wallet above to create a new fundraiser."
                 : null
             }
           >

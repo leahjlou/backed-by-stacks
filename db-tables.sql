@@ -1,14 +1,17 @@
 -- sql to create tables
 
 CREATE TABLE Campaigns (
-  ID INTEGER PRIMARY KEY,
+  ID SERIAL PRIMARY KEY,
+  ChainTxID varchar(255),
+  ChainIsPending BOOLEAN,
+  ChainConfirmedID INTEGER UNIQUE,
   Title varchar(255),
   Description varchar(255),
   URL varchar(255),
   Image varchar(255),
-  BlockHeightExpiration INTEGER NOT NULL,
-  FundingGoal INTEGER NOT NULL,
-  TotalRaised INTEGER NOT NULL DEFAULT 0,
+  BlockHeightExpiration INTEGER,
+  FundingGoal BIGINT NOT NULL,
+  TotalRaised BIGINT NOT NULL DEFAULT 0,
   DateCreated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   DateUpdated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 )

@@ -1,5 +1,5 @@
 import { sql } from "@vercel/postgres";
-import { Contribution, ContributionSchema } from "../models";
+import { Contribution, ContributionSchema } from "../../models";
 
 // POST /api/contributions
 // Handle contribution made to campaign

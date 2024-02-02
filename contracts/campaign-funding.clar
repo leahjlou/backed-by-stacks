@@ -39,7 +39,7 @@
 (define-map campaigns uint {
 	owner: principal, ;; address which created the campaign
     title: (string-utf8 200),
-    stx-goal: uint, ;; funding goal (in stx)
+    ustx-goal: uint, ;; funding goal (in ustx, 1 ustx = 0.000001 stx)
     end-block-height: uint, ;; when this block height is reached, the campaign will end
     data-hash: (string-utf8 40), ;; hash of off-chain data (data is stored by the application and on-chain hash is compared to validate)
 })
@@ -68,8 +68,8 @@
 
 ;; Create a new campaign
 (define-public (add-campaign
-    (title (string-utf8 20))
-    (stx-goal uint)
+    (title (string-utf8 200))
+    (ustx-goal uint)
     (num-blocks-until-end uint)
     (data-hash (string-utf8 40))
 )
@@ -78,7 +78,7 @@
                 (map-set campaigns campaign-id {
                     owner: tx-sender,
                     title: title,
-                    stx-goal: stx-goal,
+                    ustx-goal: ustx-goal,
                     end-block-height: (+ num-blocks-until-end block-height),
                     data-hash: data-hash,
                 })
@@ -111,7 +111,7 @@
         (map-set campaigns campaign-id {
             owner: tx-sender,
             title: title,
-            stx-goal: (get stx-goal campaign),
+            ustx-goal: (get ustx-goal campaign),
             end-block-height: (get end-block-height campaign),
             data-hash: data-hash,
         })
@@ -169,7 +169,7 @@
         ;; Ensure the campaign is expired
         (asserts! (unwrap! (is-campaign-expired campaign-id) error-unknown) error-campaign-not-ended)
         ;; Ensure the campaign did not meet its funding goal
-        (asserts! (< (get funding-total-amount campaign-funding-total) (get stx-goal campaign)) error-campaign-succeeded-no-refund)
+        (asserts! (< (get funding-total-amount campaign-funding-total) (get ustx-goal campaign)) error-campaign-succeeded-no-refund)
         ;; Ensure the contribution has not already been refunded
         (asserts! (not (get is-refunded contribution)) error-already-refunded)
         
@@ -205,7 +205,7 @@
         ;; Ensure the campaign is expired
         (asserts! (unwrap! (is-campaign-expired campaign-id) error-unknown) error-campaign-not-ended)
         ;; Ensure the campaign met its funding goal
-        (asserts! (>= (get funding-total-amount campaign-funding-total) (get stx-goal campaign)) error-campaign-failed)
+        (asserts! (>= (get funding-total-amount campaign-funding-total) (get ustx-goal campaign)) error-campaign-failed)
         ;; Ensure the funds have not already been collected
         (asserts! (not (get is-collected campaign-funding-total)) error-already-collected)
         
