@@ -5,6 +5,7 @@ CREATE TABLE Campaigns (
   ChainTxID varchar(255),
   ChainIsPending BOOLEAN,
   ChainConfirmedID INTEGER UNIQUE,
+  Owner varchar(255),
   Title varchar(255),
   Description varchar(255),
   URL varchar(255),

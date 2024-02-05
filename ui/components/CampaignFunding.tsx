@@ -13,10 +13,10 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { Campaign, CampaignFundingInfo } from "../../app/models";
+import { Campaign, CampaignFundingInfo, Contribution } from "../../app/models";
 import { stxToUstx, ustxToStx } from "../../utils/token-utils";
 import StacksIcon from "../icons/StacksIcon";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import WalletContext from "../context/WalletContext";
 import ConnectWalletButton from "./ConnectWalletButton";
 import {
@@ -41,12 +41,12 @@ import axios from "axios";
 const CampaignFunding = ({
   campaign,
   fundingInfo,
-  chainTip,
+  isExpired,
   refreshCampaign,
 }: {
   campaign: Campaign;
   fundingInfo: CampaignFundingInfo | null;
-  chainTip: number | null;
+  isExpired: boolean;
   refreshCampaign: Function;
 }) => {
   const toast = useToast();
@@ -59,8 +59,6 @@ const CampaignFunding = ({
   const [contributionAmount, setContributionAmount] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
 
-  const isExpired =
-    chainTip && chainTip > (campaign.blockHeightExpiration || 0);
   const isSucceeded =
     Number(campaign.totalRaised) >= Number(campaign.fundingGoal);
 
@@ -128,138 +126,141 @@ const CampaignFunding = ({
   };
 
   return (
-    <Flex direction="column" gap="4" my="2" py="4">
-      <Box>
-        <Text as="span" fontWeight="bold">
-          {campaign.title}
-        </Text>{" "}
-        {isExpired ? (
-          <Text as="span">
-            {isSucceeded
-              ? "reached its goal and will be funded succesfully! 🎉"
-              : "did not reach its goal this time, and contributions will be returned to the backers. We're rooting for them next time!"}
-          </Text>
-        ) : (
-          <Text as="span">
-            {isSucceeded
-              ? "already reached its goal! 🎉 But you can still back this project and make it even more successful."
-              : "is looking for backers to reach its funding goal!"}
-          </Text>
-        )}
-      </Box>
-      <Box>
-        <Flex w="full" direction="column" justify="center" align="center">
-          {fundingInfo?.numContributions ? (
-            <Flex>
-              <Text fontWeight="bold" mx="2">
-                {fundingInfo.numContributions}
-              </Text>{" "}
-              {fundingInfo.numContributions === 1
-                ? "backer has raised"
-                : "backers have raised"}
-            </Flex>
-          ) : null}
-          <Flex gap="2">
-            <Flex gap="1">
-              <StacksIcon mt="1" />
-              <Text fontWeight="bold" mr="1">
-                {ustxToStx(campaign.totalRaised)}
-              </Text>{" "}
-              STX
-            </Flex>
-            <Box>of</Box>
-            <Flex gap="1">
-              <StacksIcon mt="1" />
-              <Text fontWeight="bold" mr="1">
-                {ustxToStx(campaign.fundingGoal)}
-              </Text>{" "}
-              STX
+    <>
+      <Flex direction="column" gap="4" my="2" py="4">
+        <Box>
+          <Text as="span" fontWeight="bold">
+            {campaign.title}
+          </Text>{" "}
+          {isExpired ? (
+            <Text as="span">
+              {isSucceeded
+                ? "reached its goal and will be funded succesfully! 🎉"
+                : "did not reach its goal this time, and contributions will be returned to the backers. We're rooting for them next time!"}
+            </Text>
+          ) : (
+            <Text as="span">
+              {isSucceeded
+                ? "already reached its goal! 🎉 But you can still back this project and make it even more successful."
+                : "is looking for backers to reach its funding goal!"}
+            </Text>
+          )}
+        </Box>
+        <Box>
+          <Flex w="full" direction="column" justify="center" align="center">
+            {fundingInfo?.numContributions ? (
+              <Flex>
+                <Text fontWeight="bold" mx="2">
+                  {fundingInfo.numContributions}
+                </Text>{" "}
+                {fundingInfo.numContributions === 1
+                  ? "backer has raised"
+                  : "backers have raised"}
+              </Flex>
+            ) : null}
+            <Flex gap="2">
+              <Flex gap="1">
+                <StacksIcon mt="1" />
+                <Text fontWeight="bold" mr="1">
+                  {ustxToStx(campaign.totalRaised)}
+                </Text>{" "}
+                STX
+              </Flex>
+              <Box>of</Box>
+              <Flex gap="1">
+                <StacksIcon mt="1" />
+                <Text fontWeight="bold" mr="1">
+                  {ustxToStx(campaign.fundingGoal)}
+                </Text>{" "}
+                STX
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
-        <Progress
-          colorScheme="purple"
-          mt="2"
-          value={Math.max(
-            1, // Show at least a little sliver of the progress bar
-            Math.min(
-              100,
-              (Number(campaign.totalRaised) / Number(campaign.fundingGoal)) *
-                100
-            ) // Max out at 100, even if over goal
-          )}
-        />
-      </Box>
-      {!isExpired ? (
-        <>
-          {!isWalletConnected ? (
-            <Flex direction="column" align="center" gap="4">
-              Connect your wallet to back this fundraiser.
-              <ConnectWalletButton variant="solid" colorScheme="purple" />
-            </Flex>
-          ) : (
-            <Flex direction="column" gap="4" mt="8">
-              <FormLabel mb="0">Back this project</FormLabel>
-              <Flex gap="4" align="center">
-                {["20", "50", "100", "200", "1000"].map((amount) => (
-                  <Button
-                    key={amount}
-                    variant="outline"
-                    bg={amount === contributionAmount ? "gray.200" : "white"}
-                    _hover={{
-                      bg: amount === contributionAmount ? "gray.200" : "white",
-                    }}
-                    onClick={() => {
-                      setContributionAmount(amount);
-                    }}
-                  >
-                    {amount} STX
-                  </Button>
-                ))}
+          <Progress
+            colorScheme="purple"
+            mt="2"
+            value={Math.max(
+              1, // Show at least a little sliver of the progress bar
+              Math.min(
+                100,
+                (Number(campaign.totalRaised) / Number(campaign.fundingGoal)) *
+                  100
+              ) // Max out at 100, even if over goal
+            )}
+          />
+        </Box>
+        {!isExpired ? (
+          <>
+            {!isWalletConnected ? (
+              <Flex direction="column" align="center" gap="4">
+                Connect your wallet to back this fundraiser.
+                <ConnectWalletButton variant="solid" colorScheme="purple" />
               </Flex>
-              <FormControl>
-                <Flex gap="3">
-                  <InputGroup>
-                    <InputLeftAddon
-                      bg="gray.600"
-                      color="white"
-                      borderColor="purple.600"
-                    >
-                      <StacksIcon />
-                    </InputLeftAddon>
-                    <Input
-                      type="number"
-                      value={contributionAmount}
-                      onChange={(e) => {
-                        setContributionAmount(e.target.value);
-                      }}
-                    />
-                  </InputGroup>
-                  <Tooltip label="You'll be prompted to confirm this transaction with your wallet.">
+            ) : (
+              <Flex direction="column" gap="4" mt="8">
+                <FormLabel mb="0">Back this project</FormLabel>
+                <Flex gap="4" align="center">
+                  {["20", "50", "100", "200", "1000"].map((amount) => (
                     <Button
-                      minW="20%"
-                      isDisabled={
-                        isLoading || isNaN(parseInt(contributionAmount))
-                      }
-                      isLoading={isLoading}
-                      colorScheme="purple"
-                      onClick={handleMakeContribution}
+                      key={amount}
+                      variant="outline"
+                      bg={amount === contributionAmount ? "gray.200" : "white"}
+                      _hover={{
+                        bg:
+                          amount === contributionAmount ? "gray.200" : "white",
+                      }}
+                      onClick={() => {
+                        setContributionAmount(amount);
+                      }}
                     >
-                      I'm in!
+                      {amount} STX
                     </Button>
-                  </Tooltip>
+                  ))}
                 </Flex>
-                <FormHelperText>
-                  If this campaign reaches its goal before it expires, the funds
-                  will be collected by the owner of this fundraiser. If not,
-                  you'll receive a refund.
-                </FormHelperText>
-              </FormControl>
-            </Flex>
-          )}
-        </>
-      ) : null}
-    </Flex>
+                <FormControl>
+                  <Flex gap="3">
+                    <InputGroup>
+                      <InputLeftAddon
+                        bg="gray.600"
+                        color="white"
+                        borderColor="purple.600"
+                      >
+                        <StacksIcon />
+                      </InputLeftAddon>
+                      <Input
+                        type="number"
+                        value={contributionAmount}
+                        onChange={(e) => {
+                          setContributionAmount(e.target.value);
+                        }}
+                      />
+                    </InputGroup>
+                    <Tooltip label="You'll be prompted to confirm this transaction with your wallet.">
+                      <Button
+                        minW="20%"
+                        isDisabled={
+                          isLoading || isNaN(parseInt(contributionAmount))
+                        }
+                        isLoading={isLoading}
+                        colorScheme="purple"
+                        onClick={handleMakeContribution}
+                      >
+                        I'm in!
+                      </Button>
+                    </Tooltip>
+                  </Flex>
+                  <FormHelperText>
+                    If this campaign does not reach its funding goal before the
+                    expiration block, your contribution will be elibile for a
+                    refund (less network fees for transactions).
+                  </FormHelperText>
+                </FormControl>
+              </Flex>
+            )}
+          </>
+        ) : null}
+      </Flex>
+    </>
   );
 };
 

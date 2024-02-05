@@ -43,7 +43,15 @@ export async function PUT(
   // TODO: improve validation & error handling. Most issues just throw and respond with 500.
   const result = await sql`
     UPDATE Campaigns
-    SET Description = ${campaign.description}, URL = ${campaign.url}, Image = ${campaign.image}, BlockHeightExpiration = ${campaign.blockHeightExpiration}, FundingGoal = ${campaign.fundingGoal}, TotalRaised = ${campaign.totalRaised}, DateUpdated = to_timestamp(${campaign.dateUpdated} / 1000.0)
+    SET Description = ${campaign.description}, isCollected = ${
+    campaign.isCollected
+  }, URL = ${campaign.url}, Image = ${
+    campaign.image
+  }, BlockHeightExpiration = ${campaign.blockHeightExpiration}, FundingGoal = ${
+    campaign.fundingGoal
+  }, TotalRaised = ${
+    campaign.totalRaised
+  }, DateUpdated = to_timestamp(${Date.now()} / 1000.0)
     WHERE ID = ${campaignId}
     RETURNING *
   `;

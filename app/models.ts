@@ -3,6 +3,7 @@ import crypto from "crypto";
 
 export const CampaignSchema = z.object({
   title: z.string(),
+  owner: z.string(),
   chainTxId: z.string(),
   chainIsPending: z.boolean(),
   chainConfirmedId: z.number().optional(),
@@ -19,6 +20,7 @@ export const CampaignSchema = z.object({
 
 export interface Campaign {
   id?: number;
+  owner: string; // Address of campaign owner
   chainTxId: string; // Transaction ID of the contract call which added this campaign
   chainIsPending: boolean; // If the campaign creation is still pending on chain
   chainConfirmedId?: number; // Campaign ID on chain
@@ -50,6 +52,7 @@ export interface CampaignDetailsResponse {
 export function campaignDbToClient(campaignData: any) {
   return {
     id: campaignData.id,
+    owner: campaignData.owner,
     chainTxId: campaignData.chaintxid,
     chainIsPending: campaignData.chainispending,
     chainConfirmedId: campaignData.chainconfirmedid,

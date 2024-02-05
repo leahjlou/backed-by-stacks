@@ -48,8 +48,7 @@ Once the DevNet is running, note that you can use the [Stacks Explorer connected
 
 Finally, you'll need to provide values for these environment variables in your `.env.development.local` file:
 
-- `APP_STX_ADDRESS`: STX wallet address for a wallet responsible for making contract calls from the application's backend.
-- `APP_STX_MNEMONIC`: The corresponding mnemonic (secret key) for this wallet address.
+- `NEXT_PUBLIC_APP_STX_ADDRESS`: STX wallet address for a wallet responsible for making contract calls.
 
 #### 3. Run the web application
 

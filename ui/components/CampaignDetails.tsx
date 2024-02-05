@@ -3,7 +3,6 @@ import { Campaign } from "../../app/models";
 import { ustxToStx } from "../../utils/token-utils";
 import StacksIcon from "../icons/StacksIcon";
 import { truncateMiddle } from "../../utils/string-utils";
-import useCurrentChainTip from "../hooks/useCurrentChainTip";
 
 const CampaignDetails = ({
   campaign,
@@ -13,7 +12,7 @@ const CampaignDetails = ({
   chainTip: number | null;
 }) => {
   const isExpired =
-    chainTip && chainTip > (campaign.blockHeightExpiration || 0);
+    chainTip && chainTip >= (campaign.blockHeightExpiration || 0);
 
   return (
     <Flex direction="column" gap="6" bg="gray.100" p="6" borderRadius="md">
@@ -46,7 +45,7 @@ const CampaignDetails = ({
           <Box fontWeight="bold">Funding goal</Box>
           <Flex>
             <StacksIcon mt="1" mr="1" />
-            {ustxToStx(campaign.fundingGoal)}
+            {ustxToStx(campaign.fundingGoal)} STX
           </Flex>
         </Flex>
         <Flex gap="3">

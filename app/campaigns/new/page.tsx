@@ -40,7 +40,11 @@ import { useRouter } from "next/navigation";
 export default function Page() {
   const toast = useToast();
   const router = useRouter();
-  const { isWalletConnected } = useContext(WalletContext);
+  const { isWalletConnected, mainnetAddress, testnetAddress } =
+    useContext(WalletContext);
+  const userWalletAddress = STACKS_NETWORK.isMainnet()
+    ? mainnetAddress
+    : testnetAddress;
 
   const [isLoading, setIsLoading] = useState(false);
   const [campaignData, setCampaignData] = useState({
@@ -91,6 +95,7 @@ export default function Page() {
           chainTxId,
           chainIsPending: true,
           title: campaignData.title,
+          owner: userWalletAddress,
           description: campaignData.description,
           url: campaignData.url,
           image: campaignData.image,

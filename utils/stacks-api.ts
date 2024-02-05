@@ -35,12 +35,9 @@ export const STACKS_NETWORK = isMainnet
   ? new StacksTestnet(networkConfig)
   : new StacksDevnet(networkConfig);
 
-export const APPLICATION_ADDRESS = process.env.APP_STX_ADDRESS;
-// export const APPLICATION_MNEMONIC = process.env.APP_STX_MNEMONIC;
-export const APPLICATION_WALLET = await generateWallet({
-  secretKey: process.env.APP_STX_MNEMONIC || "",
-  password: "",
-});
+export const APPLICATION_ADDRESS =
+  process.env.NEXT_PUBLIC_APP_STX_ADDRESS || "";
+console.log({ APPLICATION_ADDRESS });
 
 export type ContractFunctionName =
   | "add-campaign"
