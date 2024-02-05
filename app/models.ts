@@ -12,6 +12,7 @@ export const CampaignSchema = z.object({
   blockHeightExpiration: z.number().int().optional(),
   fundingGoal: z.number().int(),
   totalRaised: z.number().int(),
+  isCollected: z.boolean().optional(),
   dateCreated: z.number(),
   dateUpdated: z.number(),
 });
@@ -28,9 +29,9 @@ export interface Campaign {
   blockHeightExpiration?: number;
   fundingGoal: number;
   totalRaised: number;
+  isCollected?: boolean; // If funds have been collected at the end of the campaign
   dateCreated: number; // ms timestamp
   dateUpdated: number; // ms timestamp
-  isDataValidatedOnChain?: boolean; // Flag to verify data against on-chain hash
 }
 
 export interface CampaignFundingInfo {
@@ -56,9 +57,10 @@ export function campaignDbToClient(campaignData: any) {
     description: campaignData.description,
     url: campaignData.url,
     image: campaignData.image,
-    blockHeightExpiration: campaignData.blockheightexpiration,
-    fundingGoal: campaignData.fundinggoal,
-    totalRaised: campaignData.totalraised,
+    blockHeightExpiration: Number(campaignData.blockheightexpiration),
+    fundingGoal: Number(campaignData.fundinggoal),
+    totalRaised: Number(campaignData.totalraised),
+    isCollected: campaignData.iscollected,
     dateCreated: new Date(campaignData.datecreated).getTime(),
     dateUpdated: new Date(campaignData.dateupdated).getTime(),
   };
@@ -86,6 +88,7 @@ export const ContributionSchema = z.object({
   campaignId: z.number().int(),
   principal: z.string(),
   amount: z.number().int(),
+  isRefunded: z.boolean().optional(),
   dateCreated: z.number(),
   dateUpdated: z.number(),
 });
@@ -94,6 +97,7 @@ export interface Contribution {
   campaignId: number;
   principal: string;
   amount: number;
+  isRefunded?: boolean;
   dateCreated: number; // ms timestamp
   dateUpdated: number; // ms timestamp
 }
@@ -103,7 +107,8 @@ export function contributionDbToClient(contributionData: any) {
   return {
     campaignId: contributionData.campaignid,
     principal: contributionData.principal,
-    amount: contributionData.amount,
+    amount: Number(contributionData.amount),
+    isRefunded: contributionData.isrefunded,
     dateCreated: new Date(contributionData.datecreated).getTime(),
     dateUpdated: new Date(contributionData.dateupdated).getTime(),
   };

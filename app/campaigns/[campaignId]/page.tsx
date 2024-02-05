@@ -110,7 +110,7 @@ export default function Page({ params }: { params: { campaignId: string } }) {
               {fundraiserAlerts}
               <CampaignDetails campaign={campaign} chainTip={chainTip} />
             </Flex>
-            {campaign?.chainConfirmedId && fundingInfo ? (
+            {!campaign?.chainIsPending ? (
               <Flex direction="column" gap="4">
                 {/* <Heading size="md">Back this Fundraiser</Heading> */}
                 <CampaignFunding

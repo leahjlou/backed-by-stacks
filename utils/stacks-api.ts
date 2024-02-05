@@ -1,29 +1,46 @@
 import { Configuration } from "@stacks/blockchain-api-client";
-import { StacksDevnet } from "@stacks/network";
+import { StacksDevnet, StacksMainnet, StacksTestnet } from "@stacks/network";
 import {
   TransactionStatus,
   MempoolTransactionStatus,
 } from "@stacks/stacks-blockchain-api-types";
+import { generateWallet } from "@stacks/wallet-sdk";
 
-// TODO: make this file dynamic/env var driven
-export const STACKS_API_ROOT_URL = "http://localhost:3999";
+const isTestnet = process.env.STACKS_TESTNET;
+const isMainnet = process.env.STACKS_MAINNET;
 
-// https://api.mainnet.hiro.so
-// https://api.testnet.hiro.so
-// Local devnet: http://localhost:3999/doc
+export const STACKS_API_ROOT_URL = isMainnet
+  ? "https://api.mainnet.hiro.so"
+  : isTestnet
+  ? "https://api.testnet.hiro.so"
+  : "http://localhost:3999";
+
 export const BLOCKCHAIN_API_CONFIG = new Configuration({
   fetchApi: fetch,
   basePath: STACKS_API_ROOT_URL,
 });
 
-export const CONTRACT_DEPLOYER_ADDRESS =
-  "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
-export const CONTRACT_NAME = "campaign-funding";
-export const STACKS_NETWORK = new StacksDevnet({
-  url: STACKS_API_ROOT_URL,
-});
+export const CONTRACT_DEPLOYER_ADDRESS = isMainnet
+  ? "SPKDTDEAR9PX0YJGQQ34TNTY9087E3029JPF2AH1" // Mainnet
+  : isTestnet
+  ? "STKDTDEAR9PX0YJGQQ34TNTY9087E3029K3QJ9EK" // Testnet
+  : "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"; // Devnet
 
-export const APPLICATION_ADDRESS = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
+export const CONTRACT_NAME = "campaign-funding";
+
+const networkConfig = { url: STACKS_API_ROOT_URL };
+export const STACKS_NETWORK = isMainnet
+  ? new StacksMainnet(networkConfig)
+  : isTestnet
+  ? new StacksTestnet(networkConfig)
+  : new StacksDevnet(networkConfig);
+
+export const APPLICATION_ADDRESS = process.env.APP_STX_ADDRESS;
+// export const APPLICATION_MNEMONIC = process.env.APP_STX_MNEMONIC;
+export const APPLICATION_WALLET = await generateWallet({
+  secretKey: process.env.APP_STX_MNEMONIC || "",
+  password: "",
+});
 
 export type ContractFunctionName =
   | "add-campaign"

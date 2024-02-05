@@ -25,6 +25,7 @@
     "@stacks/network": "^6.11.3",
     "@stacks/stacks-blockchain-api-types": "^7.8.0",
     "@stacks/transactions": "^6.11.3",
+    "@stacks/wallet-sdk": "^6.11.3",
     "@vercel/blob": "^0.20.0",
     "@vercel/postgres": "^0.7.2",
     "axios": "^1.6.7",

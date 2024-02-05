@@ -45,7 +45,7 @@ const CampaignFunding = ({
   refreshCampaign,
 }: {
   campaign: Campaign;
-  fundingInfo: CampaignFundingInfo;
+  fundingInfo: CampaignFundingInfo | null;
   chainTip: number | null;
   refreshCampaign: Function;
 }) => {
@@ -61,9 +61,15 @@ const CampaignFunding = ({
 
   const isExpired =
     chainTip && chainTip > (campaign.blockHeightExpiration || 0);
-  const isSucceeded = fundingInfo.amount >= campaign.fundingGoal;
+  const isSucceeded =
+    Number(campaign.totalRaised) >= Number(campaign.fundingGoal);
 
   const handleMakeContribution = async () => {
+    if (!userWalletAddress) {
+      console.error("No connected wallet");
+      return;
+    }
+
     // this post-condition ensures that the user will have the given amount transferred out of their wallet
     const postCondition = makeStandardSTXPostCondition(
       userWalletAddress,
@@ -87,7 +93,6 @@ const CampaignFunding = ({
         setIsLoading(false);
       },
       onFinish: async (data: FinishedTxData) => {
-        console.log({ data });
         toast({
           status: "success",
           title: "Contribution submitted",
@@ -131,8 +136,8 @@ const CampaignFunding = ({
         {isExpired ? (
           <Text as="span">
             {isSucceeded
-              ? "reached its goal and was funded succesfully! 🎉"
-              : "did not reach its goal this time, and contributions were returned to the backers. We're rooting for them next time!"}
+              ? "reached its goal and will be funded succesfully! 🎉"
+              : "did not reach its goal this time, and contributions will be returned to the backers. We're rooting for them next time!"}
           </Text>
         ) : (
           <Text as="span">
@@ -144,14 +149,16 @@ const CampaignFunding = ({
       </Box>
       <Box>
         <Flex w="full" direction="column" justify="center" align="center">
-          <Flex>
-            <Text fontWeight="bold" mx="2">
-              {fundingInfo.numContributions}
-            </Text>{" "}
-            {fundingInfo.numContributions === 1
-              ? "backer has raised"
-              : "backers have raised"}
-          </Flex>
+          {fundingInfo?.numContributions ? (
+            <Flex>
+              <Text fontWeight="bold" mx="2">
+                {fundingInfo.numContributions}
+              </Text>{" "}
+              {fundingInfo.numContributions === 1
+                ? "backer has raised"
+                : "backers have raised"}
+            </Flex>
+          ) : null}
           <Flex gap="2">
             <Flex gap="1">
               <StacksIcon mt="1" />
@@ -174,8 +181,12 @@ const CampaignFunding = ({
           colorScheme="purple"
           mt="2"
           value={Math.max(
-            1,
-            Math.min(100, (fundingInfo.amount / campaign.fundingGoal) * 100)
+            1, // Show at least a little sliver of the progress bar
+            Math.min(
+              100,
+              (Number(campaign.totalRaised) / Number(campaign.fundingGoal)) *
+                100
+            ) // Max out at 100, even if over goal
           )}
         />
       </Box>
@@ -192,6 +203,7 @@ const CampaignFunding = ({
               <Flex gap="4" align="center">
                 {["20", "50", "100", "200", "1000"].map((amount) => (
                   <Button
+                    key={amount}
                     variant="outline"
                     bg={amount === contributionAmount ? "gray.200" : "white"}
                     _hover={{
@@ -209,7 +221,7 @@ const CampaignFunding = ({
                 <Flex gap="3">
                   <InputGroup>
                     <InputLeftAddon
-                      bg="purple.600"
+                      bg="gray.600"
                       color="white"
                       borderColor="purple.600"
                     >

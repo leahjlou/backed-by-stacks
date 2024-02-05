@@ -20,7 +20,21 @@ npm test:contracts
 
 ### Run the application locally
 
-1. Run a local Stacks DevNet
+#### 1. Connect to the database
+
+This application uses [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres). The database schema is found in `db-tables.sql`.
+
+To run locally, connect to the existing Vercel project (or, if you forked the repo, [create your own project in Vercel](https://vercel.com/docs/projects/overview#creating-a-project) from this repo, enable Vercel Postgres, and create the necessary tables using the contents of `db-tables.sql`).
+
+Then, run:
+
+```
+vercel env pull .env.development.local
+```
+
+You should see a new file `.env.development.local`, which provides credentials for your local app to connect to the database.
+
+#### 2. Run a local Stacks DevNet
 
 ```
 clarinet devnet start
@@ -32,7 +46,12 @@ If you make changes to the Smart Contract during development, you will need to s
 
 Once the DevNet is running, note that you can use the [Stacks Explorer connected to your DevNet](https://explorer.hiro.so/sandbox/contract-call?chain=testnet&api=http://localhost:3999) to easily call functions, browse blocks, and request STX from the faucet to use for testing.
 
-2. Run the web application
+Finally, you'll need to provide values for these environment variables in your `.env.development.local` file:
+
+- `APP_STX_ADDRESS`: STX wallet address for a wallet responsible for making contract calls from the application's backend.
+- `APP_STX_MNEMONIC`: The corresponding mnemonic (secret key) for this wallet address.
+
+#### 3. Run the web application
 
 In a separate terminal window, run:
 
@@ -43,6 +62,11 @@ npm run dev
 This will start the NextJS application at `localhost:3000`.
 
 Visit `localhost:3000` in your browser.
+
+#### Development notes
+
+- If you restart your Stacks DevNet, you should also delete all rows from the database to avoid unexpected app behavior.
+- To test the app, you'll need tokens in your wallet. You can request tokens from the [faucet](https://explorer.hiro.so/sandbox/faucet) for Testnet and Devnet.
 
 ## Smart Contract
 
