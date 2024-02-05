@@ -37,7 +37,6 @@ export const STACKS_NETWORK = isMainnet
 
 export const APPLICATION_ADDRESS =
   process.env.NEXT_PUBLIC_APP_STX_ADDRESS || "";
-console.log({ APPLICATION_ADDRESS });
 
 export type ContractFunctionName =
   | "add-campaign"
