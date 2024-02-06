@@ -34,17 +34,17 @@ vercel env pull .env.development.local
 
 You should see a new file `.env.development.local`, which provides credentials for your local app to connect to the database.
 
-#### 2. Run a local Stacks DevNet
+#### 2. Run a local Stacks Devnet
 
 ```
-clarinet devnet start
+clarinet Devnet start
 ```
 
-This will start a Stacks Devnet at `localhost:3999`. The terminal window will turn into an interface where you can browse mined blocks and the transactions within them. The DevNet will automatically deploy the `campaign-funding` smart contract, and make several local wallets available for testing (see `settings/Devnet.toml` for details).
+This will start a Stacks Devnet at `localhost:3999`. The terminal window will turn into an interface where you can browse mined blocks and the transactions within them. The Devnet will automatically deploy the `campaign-funding` smart contract, and make several local wallets available for testing (see `settings/Devnet.toml` for details).
 
-If you make changes to the Smart Contract during development, you will need to stop and restart the DevNet.
+If you make changes to the Smart Contract during development, you will need to stop and restart the Devnet.
 
-Once the DevNet is running, note that you can use the [Stacks Explorer connected to your DevNet](https://explorer.hiro.so/sandbox/contract-call?chain=testnet&api=http://localhost:3999) to easily call functions, browse blocks, and request STX from the faucet to use for testing.
+Once the Devnet is running, note that you can use the [Stacks Explorer connected to your Devnet](https://explorer.hiro.so/sandbox/contract-call?chain=testnet&api=http://localhost:3999) to easily call functions, browse blocks, and request STX from the faucet to use for testing.
 
 Finally, you'll need to provide values for these environment variables in your `.env.development.local` file:
 
@@ -64,7 +64,7 @@ Visit `localhost:3000` in your browser.
 
 #### Development notes
 
-- If you restart your Stacks DevNet, you should also delete all rows from the database to avoid unexpected app behavior.
+- If you restart your Stacks Devnet, you should also delete all rows from the database to avoid unexpected app behavior.
 - To test the app, you'll need tokens in your wallet. You can request tokens from the [faucet](https://explorer.hiro.so/sandbox/faucet) for Testnet and Devnet.
 
 ## Smart Contract
