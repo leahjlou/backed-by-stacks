@@ -34,7 +34,11 @@ vercel env pull .env.development.local
 
 You should see a new file `.env.development.local`, which provides credentials for your local app to connect to the database.
 
-#### 2. Run a local Stacks DevNet
+#### 2. Run a Stacks Devnet or configure with Testnet/Mainnet
+
+If you want to run the application with the deployed contracts on Testnet/Mainnet, set the environment variable `NEXT_PUBLIC_STACKS_TESTNET` or `NEXT_PUBLIC_STACKS_MAINNET` to true.
+
+If you want to run a local Stacks Devnet, run:
 
 ```
 clarinet devnet start
