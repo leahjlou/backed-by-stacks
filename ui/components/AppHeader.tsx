@@ -1,4 +1,11 @@
-import { Link as ChakraLink, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Link as ChakraLink,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 import ConnectWalletButton from "./ConnectWalletButton";
 import Link from "next/link";
 
@@ -6,9 +13,16 @@ const AppHeader = () => {
   return (
     <Flex justify="space-between" align="center">
       <Flex direction="column">
-        <Heading as={Link} href="/">
-          BACKED BY STX
-        </Heading>
+        <Flex direction="row" gap="4" align="center">
+          <Heading as={Link} href="/">
+            BACKED BY STX
+          </Heading>
+          <Box>
+            <Badge variant="outline" colorScheme="orange">
+              testnet
+            </Badge>
+          </Box>
+        </Flex>
         <Text fontSize="xs">
           Decentralized crowdfunding, powered by{" "}
           <ChakraLink
