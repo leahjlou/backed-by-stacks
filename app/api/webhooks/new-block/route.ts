@@ -1,12 +1,7 @@
 import { sql } from "@vercel/postgres";
-import {
-  Campaign,
-  Contribution,
-  campaignDbToClient,
-  contributionDbToClient,
-} from "../../../models";
+import { Campaign, campaignDbToClient } from "../../../models";
 import { Transaction } from "@stacks/stacks-blockchain-api-types";
-import { BlocksApi, TransactionsApi } from "@stacks/blockchain-api-client";
+import { TransactionsApi } from "@stacks/blockchain-api-client";
 import {
   TX_STATUS_SUCCEEDED,
   TX_STATUS_PENDING,
@@ -19,7 +14,6 @@ import {
 } from "../../../../utils/stacks-api";
 import {
   Cl,
-  ClarityType,
   callReadOnlyFunction,
   cvToJSON,
   hexToCV,
@@ -30,9 +24,8 @@ import {
 // Synchronize application data with on-chain data, and handle closing of campaigns.
 
 const transactionsApi = new TransactionsApi(BLOCKCHAIN_API_CONFIG);
-const blocksApi = new BlocksApi(BLOCKCHAIN_API_CONFIG);
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   // Settle any pending campaigns
   const pendingCampaigns =
     await sql`SELECT * FROM Campaigns WHERE ChainIsPending = TRUE`;

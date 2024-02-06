@@ -4,7 +4,6 @@ import {
   TransactionStatus,
   MempoolTransactionStatus,
 } from "@stacks/stacks-blockchain-api-types";
-import { generateWallet } from "@stacks/wallet-sdk";
 
 const isTestnet = process.env.STACKS_TESTNET;
 const isMainnet = process.env.STACKS_MAINNET;

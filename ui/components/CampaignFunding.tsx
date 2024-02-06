@@ -13,10 +13,10 @@ import {
   Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import { Campaign, CampaignFundingInfo, Contribution } from "../../app/models";
+import { Campaign, CampaignFundingInfo } from "../../app/models";
 import { stxToUstx, ustxToStx } from "../../utils/token-utils";
 import StacksIcon from "../icons/StacksIcon";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import WalletContext from "../context/WalletContext";
 import ConnectWalletButton from "./ConnectWalletButton";
 import {
@@ -90,7 +90,7 @@ const CampaignFunding = ({
       onCancel: () => {
         setIsLoading(false);
       },
-      onFinish: async (data: FinishedTxData) => {
+      onFinish: async (_data: FinishedTxData) => {
         toast({
           status: "success",
           title: "Contribution submitted",
@@ -231,6 +231,7 @@ const CampaignFunding = ({
                         type="number"
                         value={contributionAmount}
                         onChange={(e) => {
+                          // @ts-ignore
                           setContributionAmount(e.target.value);
                         }}
                       />

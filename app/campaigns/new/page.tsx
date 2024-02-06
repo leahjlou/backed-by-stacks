@@ -174,6 +174,7 @@ export default function Page() {
                     placeholder="Title"
                     value={campaignData.title}
                     onChange={(e) => {
+                      // @ts-ignore
                       changeCampaignData("title", e.target.value);
                     }}
                   />
@@ -191,6 +192,7 @@ export default function Page() {
                     placeholder="Description"
                     value={campaignData.description}
                     onChange={(e) => {
+                      // @ts-ignore
                       changeCampaignData("description", e.target.value);
                     }}
                   />
@@ -208,6 +210,7 @@ export default function Page() {
                     placeholder="https://my-project.is/cool"
                     value={campaignData.url}
                     onChange={(e) => {
+                      // @ts-ignore
                       changeCampaignData("url", e.target.value);
                     }}
                   />
@@ -248,6 +251,7 @@ export default function Page() {
                       placeholder="STX amount"
                       value={campaignData.fundingGoal}
                       onChange={(e) => {
+                        // @ts-ignore
                         changeCampaignData("fundingGoal", e.target.value);
                       }}
                     />
@@ -272,6 +276,7 @@ export default function Page() {
                     placeholder="Number of blocks"
                     value={campaignData.blockDuration}
                     onChange={(e) => {
+                      // @ts-ignore
                       changeCampaignData("blockDuration", e.target.value);
                     }}
                   />

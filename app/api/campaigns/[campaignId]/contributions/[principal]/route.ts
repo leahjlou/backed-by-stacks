@@ -8,7 +8,7 @@ import {
 // GET /api/campaigns/{campaignId}/contributions/{principal}
 // Get contribution for user
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { campaignId: string; principal: string } }
 ) {
   const campaignId = params.campaignId;

@@ -12,10 +12,12 @@ export default function ImageUploader({
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleUploadImage = async () => {
+    // @ts-ignore
     if (!inputFileRef.current?.files) {
       throw new Error("No file selected");
     }
 
+    // @ts-ignore
     const file = inputFileRef.current.files[0];
 
     const response = await fetch(`/api/images?filename=${file.name}`, {

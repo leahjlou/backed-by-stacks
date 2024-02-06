@@ -17,8 +17,6 @@ import {
   Cl,
   callReadOnlyFunction,
   cvToJSON,
-  cvToValue,
-  responseErrorCV,
   ClarityType,
 } from "@stacks/transactions";
 
@@ -63,7 +61,7 @@ export async function PUT(
 // GET /api/campaigns/{id}
 // Get campaign details
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { campaignId: string } }
 ) {
   const campaignId = params.campaignId;
@@ -81,7 +79,7 @@ export async function GET(
   }
 
   // Get campaign info from blockchain
-  let fundingInfo;
+  let fundingInfo = null;
   let onChainHash;
   const campaignChainId = campaign.chainConfirmedId;
   if (campaignChainId) {

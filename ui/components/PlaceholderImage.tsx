@@ -11,6 +11,7 @@ const PlaceholderImage = ({ title }: { title: string }) => {
       bg={getRandomPlaceholderColor()}
       color="white"
     >
+      {/* @ts-ignore */}
       <marquee>{title}</marquee>
     </Box>
   );

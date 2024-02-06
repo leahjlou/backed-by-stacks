@@ -1,6 +1,6 @@
-import { Icon } from "@chakra-ui/react";
+import { Icon, IconProps } from "@chakra-ui/react";
 
-const StacksIcon = (props) => (
+const StacksIcon = (props: IconProps) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <Icon viewBox="0 0 12 12" fill="none" {...props}>
     <path

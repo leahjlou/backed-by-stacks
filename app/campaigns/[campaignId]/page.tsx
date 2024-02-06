@@ -8,7 +8,6 @@ import {
   Box,
   Flex,
   Link,
-  Text,
   useToast,
 } from "@chakra-ui/react";
 import PageContainer from "../../../ui/components/PageContainer";
@@ -26,7 +25,7 @@ import {
   STACKS_NETWORK,
 } from "../../../utils/stacks-api";
 import WalletContext from "../../../ui/context/WalletContext";
-import { stxToUstx, ustxToStx } from "../../../utils/token-utils";
+import { ustxToStx } from "../../../utils/token-utils";
 import {
   ContractCallOptions,
   FinishedTxData,
@@ -37,7 +36,6 @@ import {
   FungibleConditionCode,
   PostConditionMode,
   makeContractSTXPostCondition,
-  makeStandardSTXPostCondition,
 } from "@stacks/transactions";
 
 export default function Page({ params }: { params: { campaignId: string } }) {
