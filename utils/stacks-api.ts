@@ -5,8 +5,8 @@ import {
   MempoolTransactionStatus,
 } from "@stacks/stacks-blockchain-api-types";
 
-const isTestnet = process.env.STACKS_TESTNET;
-const isMainnet = process.env.STACKS_MAINNET;
+const isTestnet = process.env.NEXT_PUBLIC_STACKS_TESTNET;
+const isMainnet = process.env.NEXT_PUBLIC_STACKS_MAINNET;
 
 export const STACKS_API_ROOT_URL = isMainnet
   ? "https://api.mainnet.hiro.so"
