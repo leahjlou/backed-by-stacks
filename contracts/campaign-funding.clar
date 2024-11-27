@@ -6,6 +6,7 @@
 
 ;; traits
 ;;
+;; foo
 
 ;; token definitions
 ;;
