@@ -6,7 +6,6 @@
 
 ;; traits
 ;;
-;; asdf
 
 ;; token definitions
 ;;
